@@ -61,70 +61,22 @@ docs/                          architecture, roadmap, Plaid, and security notes
 The dependency direction is `presentation -> repository/service -> provider`.
 Budgeting code knows nothing about Plaid, CSV files, or backend SDKs.
 
-## Windows setup
+## Build and run from source
 
-This machine now has the Flutter stable SDK at
-`C:\Users\chris\develop\flutter`. It is not assumed to be on `PATH`, so the
-commands below use the exact executable path.
+Use Flutter 3.47.4 (Dart 3.13.3), with Flutter's `bin` directory on PATH. On Windows x64, install Visual Studio's **Desktop development with C++** workload and enable Developer Mode for plugin symlinks. Android additionally needs Android Studio/SDK and an emulator or attached device. Run `flutter doctor -v` to check your chosen target; accept Android SDK licenses with `flutter doctor --android-licenses` if using Android.
 
-1. Turn on Windows **Developer Mode** under **Settings > System > Advanced >
-   For developers**. Flutter needs this to create package-plugin symlinks. It is
-   enabled on this machine.
-2. Install Android Studio, or use the command-line tools at
-   `C:\Users\chris\AppData\Local\Android\Sdk`. This machine has Android Studio,
-   Android platform/build tools 36, the emulator, and a Google APIs x86-64
-   Android 36 system image installed.
-3. For Windows desktop, install Visual Studio (not VS Code) with the **Desktop
-   development with C++** workload. This machine already satisfies that check.
-4. In PowerShell, validate both targets:
+From the repository root in PowerShell:
 
-   ```powershell
-   C:\Users\chris\develop\flutter\bin\flutter.bat doctor -v
-   C:\Users\chris\develop\flutter\bin\flutter.bat doctor --android-licenses
-   C:\Users\chris\develop\flutter\bin\flutter.bat devices
-   ```
+```powershell
+flutter pub get --enforce-lockfile
+flutter analyze
+flutter test
+flutter run -d windows
+```
 
-5. Get packages, generate Drift code, and run the checks:
+For a native Windows debug build, run `flutter build windows --debug`; its executable is `build/windows/x64/runner/Debug/student_flow.exe`. For Android, use `flutter devices` and `flutter run -d <device-id>`, or `flutter build apk --debug` with the Android toolchain installed.
 
-   ```powershell
-   Set-Location 'C:\Users\chris\OneDrive\Documents\VsCode\StudentFlow'
-   C:\Users\chris\develop\flutter\bin\flutter.bat pub get
-   C:\Users\chris\develop\flutter\bin\dart.bat run build_runner build
-   C:\Users\chris\develop\flutter\bin\dart.bat format --set-exit-if-changed lib test
-   C:\Users\chris\develop\flutter\bin\flutter.bat analyze
-   C:\Users\chris\develop\flutter\bin\flutter.bat test
-   ```
-
-6. Run on Windows:
-
-   ```powershell
-   C:\Users\chris\develop\flutter\bin\flutter.bat run -d windows
-   ```
-
-7. Run on an Android emulator or attached device. Use the identifier shown by
-   `flutter devices`:
-
-   ```powershell
-   C:\Users\chris\develop\flutter\bin\flutter.bat run -d <device-id>
-   ```
-
-   A dedicated emulator already exists on this machine. Start it, wait for it
-   to appear in `flutter devices`, then run StudentFlow:
-
-   ```powershell
-   C:\Users\chris\AppData\Local\Android\Sdk\emulator\emulator.exe -avd StudentFlow_Pixel_8_API_36
-   C:\Users\chris\develop\flutter\bin\flutter.bat run -d emulator-5554
-   ```
-
-To make `flutter` available without the full path, add
-`C:\Users\chris\develop\flutter\bin` to the user `Path`, then restart terminals
-and VS Code.
-
-Current machine check: Windows desktop tooling, Developer Mode, Android Studio,
-Android SDK 36, and the dedicated emulator are ready. Flutter points at the
-per-user SDK directory. Flutter Doctor recognizes the Android toolchain; it
-still reports optional unused legacy/preview add-on licences as unaccepted.
-Flutter/Dart are not on the user `Path`, so these instructions use full paths.
+Generated Drift files are committed. After changing the schema, regenerate them with `dart run build_runner build`. Package caches, build outputs and local tooling settings are regenerated locally and are not required from Git. No real bank data or credentials are needed.
 
 ## Verification snapshot (14 September 2026)
 
